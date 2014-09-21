@@ -145,13 +145,10 @@
         8C9L3rCEJlv+rQAAAABJRU5ErkJggg==
 </value>
   </data>
-  <data name="lblInstructions.Text" xml:space="preserve">
+  <data name="lblMarketing.Text" xml:space="preserve">
     <value>REBEL is simple, powerful, and easy to use.
 
-REBEL clears operating system caches, temporary files, and empties
-the Recycle Bin; but REBEL will not delete any of your personal files.
-
-Start REBEL by pressing the button below.</value>
+REBEL clears system caches, deletes temporary files, empties the Recycle Bin, and performs routine maintenance; but, REBEL will not delete any of your personal files.</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+	<Product Id="*" Name="Rebel" Language="1033" Version="1.0.0.0" Manufacturer="Rebel" UpgradeCode="0e19f71b-7d3e-452e-aa85-32cf45a8360c">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <!-- Require .NET Framework 3.5 -->
+    <PropertyRef Id="NETFRAMEWORK35"/>
+
+    <!-- Message displayed when .NET requirement is not met. -->
+    <Condition Message="This application requires at least the .NET Framework 3.5. Please install the .NET Framework then run this installer again.">
+      <![CDATA[Installed OR NETFRAMEWORK35]]>
+    </Condition>
+
+    <!-- Default icon. -->
+    <Icon Id="ICON.ICO" SourceFile="$(var.Rebel.TargetPath)" />
+
+    <!-- Standard variable for the Add + Remove Programs icon. -->
+    <Property Id="ARPPRODUCTICON" Value="ICON.ICO" />
+    
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes" />
+
+    <!-- Install a Start Menu shortcut. -->
+    <DirectoryRef Id="APPLICATIONPROGRAMSFOLDER">
+      <Component Id="ApplicationShortcut" Guid="274ED1B3-3091-4906-A7F2-071CCDB9F8E1">
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="Rebel"
+              Target="[INSTALLFOLDER]Rebel.exe" WorkingDirectory="INSTALLFOLDER"
+              Icon="ICON.ICO" />
+        <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="APPLICATIONPROGRAMSFOLDER" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Only one feature comprises the whole application. -->
+		<Feature Id="ProductFeature" Title="Rebel" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+
+    <!-- Launch the application after installation. -->
+    <CustomAction Id="LaunchRebelExeFile" FileKey="RebelExeFile" ExeCommand="/initial" Return="asyncNoWait" />
+    <InstallExecuteSequence>
+      <Custom Action="LaunchRebelExeFile" After="InstallFinalize">NOT Installed</Custom>
+    </InstallExecuteSequence>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+      <!-- Create a folder in the Program Files folder called Rebel. -->
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="Rebel" />
+			</Directory>
+      
+      <!-- Create a folder under the Start Menu Programs folder. -->
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="APPLICATIONPROGRAMSFOLDER" Name="Rebel"/>
+      </Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+			<!-- <Component Id="ProductComponent"> -->
+				<!-- TODO: Insert files, registry keys, and other resources here. -->
+			<!-- </Component> -->
+      <Component Id="RebelExeComponent" Guid="657221DC-4D92-4585-87B9-27B826690382">
+        <!-- Main Executable File. -->
+        <File Id="RebelExeFile" Source="$(var.Rebel.TargetPath)" KeyPath="yes" />
+      </Component>
+
+      <!-- Start Menu shortcut is a part of this component. -->
+      <ComponentRef Id="ApplicationShortcut" />
+		</ComponentGroup>
+	</Fragment>
+</Wix>

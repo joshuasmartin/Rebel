@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,9 @@ namespace Rebel
         public FormMain()
         {
             InitializeComponent();
+
+            //rchMarketing.Rtf = "REBEL is simple, powerful, and easy to use.\par REBEL clears system caches, temporary files, empties the Recycle Bin, and performs routine maintenance; but, REBEL will not delete any of your personal files.\par"
+            //rchMarketing.Rtf = @"{\rtf1\ansi{\fonttbl\f0\fswiss Arial;}\f0\pard REBEL is simple, powerful, and easy to use.\par REBEL clears system caches, temporary files, empties the Recycle Bin, and performs routine maintenance; but, REBEL will not delete any of your personal files.\par}";
         }
 
         private void btnClean_Click(object sender, EventArgs e)
@@ -31,6 +35,7 @@ namespace Rebel
             results.Clear();
 
             // Show the cancel button and disable the start button.
+            lblStatus.Visible = true;
             btnCancel.Visible = true;
             btnClean.Enabled = false;
 
@@ -88,11 +93,34 @@ namespace Rebel
             cleaner.DeleteUserTemporaryFiles();
             results.Add(new object[] { "Information", "User Temporary Files Deleted", null });
 
+            // Perform system health checks.
             Advisor advisor = new Advisor();
+            this.Invoke(new UpdateProgressDelegate(updateProgress), new object[] { 80, "Performing System Health Checks" });
 
-            // Check for low memory.
+
+            // Check for high memory usage.
             if (advisor.HasHighMemoryConsumption())
-                results.Add(new object[] { "Warning", "High Memory Consumption", null });
+                results.Add(new object[] { "Warning", "High Memory Usage", 1 });
+
+            // Check for insufficient total memory.
+            if (advisor.HasInsufficientMemory())
+                results.Add(new object[] { "Warning", "Less than 2GB of Physical Memory", 2 });
+
+            // Check for low hard disk free space.
+            if (advisor.HasHighDiskUsage())
+                results.Add(new object[] { "Warning", "Less than 3GB of Free Space on System Disk", 3 });
+
+            // Check for old (possibly insecure) Java runtimes.
+            if (advisor.HasOutdatedJava())
+                results.Add(new object[] { "Warning", "Outdated Java Runtimes Detected", 4 });
+
+            // Check for old (possibly insecure) Flash instances.
+            if (advisor.HasOutdatedFlash())
+                results.Add(new object[] { "Warning", "Outdated Flash Player Installs Detected", 5 });
+
+            // Check for old (possibly insecure) Adobe Reader instances.
+            if (advisor.HasOutdatedReader())
+                results.Add(new object[] { "Warning", "Outdated Adobe Reader Installs Detected", 6 });
 
             // Record the end time.
             this.Invoke(new SetStartAndEndDelegate(setStartAndEnd), new object[] { DateTime.MinValue, DateTime.Now });
@@ -109,6 +137,7 @@ namespace Rebel
             if (progress == 100)
             {
                 // Hide the cancel button and re-enable the start button.
+                lblStatus.Visible = false;
                 btnCancel.Visible = false;
                 btnClean.Enabled = true;
 
@@ -133,6 +162,11 @@ namespace Rebel
             {
                 this.end = end;
             }
+        }
+
+        private void lnkWebsite_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("http://www.getrebel.com");
         }
     }
 }
