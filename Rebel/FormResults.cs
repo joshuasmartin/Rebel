@@ -58,7 +58,7 @@ namespace Rebel
         private void AddInformationRow(string message)
         {
             // Add the row and get the row index.
-            int index = grdResults.Rows.Add("Information", message, null);
+            int index = grdResults.Rows.Add("Information", message, null, null);
             
             // Set the styling of the row.
             grdResults.Rows[index].Cells[0].Style.Font = new Font(grdResults.Font, FontStyle.Bold);
@@ -66,27 +66,12 @@ namespace Rebel
 
         private void AddWarningRow(string message, int code)
         {
-            LinkLabel lnk = new LinkLabel();
-            lnk.Text = "Fix this Problem";
-            lnk.LinkClicked += new LinkLabelLinkClickedEventHandler(lnk_LinkClicked);
-
-
-            // Add the link URL.
-            LinkLabel.Link link = new LinkLabel.Link();
-            link.LinkData = "http://www.getrebel.com/issues/" + textForCode(code);
-	        lnk.Links.Add(link);
-
             // Add the row and get the row index.
-            int index = grdResults.Rows.Add("Warning", message, lnk);
+            int index = grdResults.Rows.Add("Warning", message, "Fix this Problem", code);
 
             // Set the styling of the row.
             grdResults.Rows[index].Cells[0].Style.Font = new Font(grdResults.Font, FontStyle.Bold);
             grdResults.Rows[index].Cells[0].Style.ForeColor = Color.DarkOrange;
-        }
-
-        void lnk_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Process.Start(e.Link.LinkData as string);
         }
 
         private string textForCode(int code)
@@ -117,10 +102,30 @@ namespace Rebel
                     {
                         return "reader-outdated";
                     }
+                case 7:
+                    {
+                        return "graylisted-application-detected";
+                    }
                 default:
                     {
                         return "";
                     }
+            }
+        }
+
+        private void grdResults_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Only respond to clicks on links.
+            if (e.ColumnIndex == 2)
+            {
+                object value = grdResults.Rows[e.RowIndex].Cells[3].Value;
+                if (value is DBNull) { return; }
+
+                string valueString = value.ToString();
+                int valueInt = int.Parse(valueString);
+                string url = string.Format("http://www.getrebel.com/issues/{0}", textForCode(valueInt));
+
+                Process.Start(url);
             }
         }
     }

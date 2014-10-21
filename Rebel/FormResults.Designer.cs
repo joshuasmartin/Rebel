@@ -35,13 +35,14 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.lblTitle = new System.Windows.Forms.Label();
             this.grdResults = new System.Windows.Forms.DataGridView();
-            this.colType = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colHelp = new System.Windows.Forms.DataGridViewLinkColumn();
             this.lblStartLabel = new System.Windows.Forms.Label();
             this.lblEndLabel = new System.Windows.Forms.Label();
             this.lblStartValue = new System.Windows.Forms.Label();
             this.lblEndValue = new System.Windows.Forms.Label();
+            this.colType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colHelp = new System.Windows.Forms.DataGridViewLinkColumn();
+            this.clmUrl = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdResults)).BeginInit();
             this.SuspendLayout();
@@ -85,7 +86,8 @@
             this.grdResults.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colType,
             this.colDescription,
-            this.colHelp});
+            this.colHelp,
+            this.clmUrl});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -109,28 +111,7 @@
             this.grdResults.RowTemplate.Height = 21;
             this.grdResults.Size = new System.Drawing.Size(600, 320);
             this.grdResults.TabIndex = 5;
-            // 
-            // colType
-            // 
-            this.colType.HeaderText = "Type";
-            this.colType.Name = "colType";
-            this.colType.ReadOnly = true;
-            // 
-            // colDescription
-            // 
-            this.colDescription.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colDescription.HeaderText = "Description";
-            this.colDescription.Name = "colDescription";
-            this.colDescription.ReadOnly = true;
-            this.colDescription.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // colHelp
-            // 
-            this.colHelp.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.colHelp.HeaderText = "";
-            this.colHelp.Name = "colHelp";
-            this.colHelp.ReadOnly = true;
-            this.colHelp.Width = 5;
+            this.grdResults.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.grdResults_CellContentClick);
             // 
             // lblStartLabel
             // 
@@ -170,6 +151,34 @@
             this.lblEndValue.TabIndex = 9;
             this.lblEndValue.Text = "[end]";
             // 
+            // colType
+            // 
+            this.colType.HeaderText = "Type";
+            this.colType.Name = "colType";
+            this.colType.ReadOnly = true;
+            this.colType.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // colDescription
+            // 
+            this.colDescription.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.colDescription.HeaderText = "Description";
+            this.colDescription.Name = "colDescription";
+            this.colDescription.ReadOnly = true;
+            this.colDescription.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // colHelp
+            // 
+            this.colHelp.HeaderText = "";
+            this.colHelp.Name = "colHelp";
+            this.colHelp.ReadOnly = true;
+            // 
+            // clmUrl
+            // 
+            this.clmUrl.HeaderText = "";
+            this.clmUrl.Name = "clmUrl";
+            this.clmUrl.ReadOnly = true;
+            this.clmUrl.Visible = false;
+            // 
             // FormResults
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -200,12 +209,13 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.DataGridView grdResults;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colType;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colDescription;
-        private System.Windows.Forms.DataGridViewLinkColumn colHelp;
         private System.Windows.Forms.Label lblStartLabel;
         private System.Windows.Forms.Label lblEndLabel;
         private System.Windows.Forms.Label lblStartValue;
         private System.Windows.Forms.Label lblEndValue;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colType;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colDescription;
+        private System.Windows.Forms.DataGridViewLinkColumn colHelp;
+        private System.Windows.Forms.DataGridViewTextBoxColumn clmUrl;
     }
 }

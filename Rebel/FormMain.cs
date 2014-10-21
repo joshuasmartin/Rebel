@@ -95,6 +95,7 @@ namespace Rebel
 
             // Perform system health checks.
             Advisor advisor = new Advisor();
+            SecurityAdvisor securityAdvisor = new SecurityAdvisor();
             this.Invoke(new UpdateProgressDelegate(updateProgress), new object[] { 80, "Performing System Health Checks" });
 
 
@@ -121,6 +122,13 @@ namespace Rebel
             // Check for old (possibly insecure) Adobe Reader instances.
             if (advisor.HasOutdatedReader())
                 results.Add(new object[] { "Warning", "Outdated Adobe Reader Installs Detected", 6 });
+
+            // Check for graylisted applications.
+            securityAdvisor.DownloadGraylist();
+            List<string> graylistedApplications = securityAdvisor.GetGraylistedApplications();
+            if (graylistedApplications.Count > 0)
+                foreach (string application in graylistedApplications)
+                    results.Add(new object[] { "Warning", "Graylisted Application \"" + application + "\" is Installed", 7 });
 
             // Record the end time.
             this.Invoke(new SetStartAndEndDelegate(setStartAndEnd), new object[] { DateTime.MinValue, DateTime.Now });

@@ -58,37 +58,74 @@ namespace Rebel
             }
         }
 
+        // Deletes the temporary files for each user account on the machine.
+        //
+        // Files are generally located under USERHOME\AppData\Local\Temp for
+        // Windows Vista, 7, and Server 2008 and 2012
+        //
+        // Files are generally located under USERHOME\Local Settings\Temp for
+        // Windows XP and Server 2003
         public void DeleteUserTemporaryFiles()
         {
-            // Loop each user home directory under the system drive's Users folder.
-            string pathToUsers = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), "Users");
-            string[] homes = Directory.GetDirectories(pathToUsers);
-            foreach (string home in homes)
+            try
             {
-                // Determine if the temp directory exists.
-                string pathToHome = Path.Combine(pathToUsers, home);
-                string pathToTemp = Path.Combine(pathToHome, @"AppData\Local\Temp");
-                if (Directory.Exists(pathToTemp))
+                // Loop each user home directory under the system drive's Users
+                // folder. Systems with 5 as the major version will use one location
+                // and systems with a major version higher than 5 will use another.
+                string pathToUsers = "";
+                if (Environment.OSVersion.Version.Major == 5)
                 {
-                    DirectoryInfo info = new DirectoryInfo(pathToTemp);
+                    pathToUsers = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), "Documents and Settings");
+                }
+                else if (Environment.OSVersion.Version.Major >= 6)
+                {
+                    pathToUsers = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), "Users");
+                }
+                string[] homes = Directory.GetDirectories(pathToUsers);
+                foreach (string home in homes)
+                {
+                    // Determine if the temp directory exists. It will be in a
+                    // different location on different versions of Windows.
+                    string pathToHome = Path.Combine(pathToUsers, home);
+                    string pathToTemp = "";
 
-                    foreach (FileInfo file in info.GetFiles())
+                    if (Environment.OSVersion.Version.Major == 5)
                     {
-                        try
-                        {
-                            file.Delete();
-                        }
-                        catch { }
+                        pathToTemp = Path.Combine(pathToHome, @"Local Settings\Temp");
                     }
-                    foreach (DirectoryInfo dir in info.GetDirectories())
+                    else if (Environment.OSVersion.Version.Major >= 6)
                     {
-                        try
+                        pathToTemp = Path.Combine(pathToHome, @"AppData\Local\Temp");
+                    }
+
+                    if (Directory.Exists(pathToTemp))
+                    {
+                        DirectoryInfo info = new DirectoryInfo(pathToTemp);
+
+                        foreach (FileInfo file in info.GetFiles())
                         {
-                            dir.Delete(true);
+                            try
+                            {
+                                file.Delete();
+                            }
+                            catch { }
                         }
-                        catch { }
+                        foreach (DirectoryInfo dir in info.GetDirectories())
+                        {
+                            try
+                            {
+                                dir.Delete(true);
+                            }
+                            catch { }
+                        }
                     }
                 }
+            }
+            catch (FileNotFoundException) { }
+            catch (DirectoryNotFoundException) { }
+            catch (Exception exception)
+            {
+                EventLog.WriteEntry("Rebel", exception.ToString(), EventLogEntryType.Warning);
             }
         }
 
@@ -107,40 +144,62 @@ namespace Rebel
 
                 foreach (FileInfo file in info.GetFiles())
                 {
-                    file.Delete();
+                    try
+                    {
+                        file.Delete();
+                    }
+                    catch { }
                 }
                 foreach (DirectoryInfo dir in info.GetDirectories())
                 {
-                    dir.Delete(true);
+                    try
+                    {
+                        dir.Delete(true);
+                    }
+                    catch { }
                 }
             }
+            catch (DirectoryNotFoundException) { }
             catch (Exception exception)
             {
-                EventLog.WriteEntry("Rebel", exception.ToString(), EventLogEntryType.Error);
+                EventLog.WriteEntry("Rebel", exception.ToString(), EventLogEntryType.Warning);
             }
         }
 
+        // Deletes the system temporary files on the machine.
+        //
+        // These temporary files are typically located
+        // under the Windows\Temp directory.
         public void DeleteWindowsTemporaryFiles()
         {
-            string pathToTemp = Path.Combine(Path.GetDirectoryName(Environment.SystemDirectory), "Temp");
-
-            DirectoryInfo tempDirectoryInfo = new DirectoryInfo(pathToTemp);
-
-            foreach (FileInfo file in tempDirectoryInfo.GetFiles())
+            try
             {
-                try
+                string pathToTemp = Path.Combine(Path.GetDirectoryName(Environment.SystemDirectory), "Temp");
+
+                DirectoryInfo tempDirectoryInfo = new DirectoryInfo(pathToTemp);
+
+                foreach (FileInfo file in tempDirectoryInfo.GetFiles())
                 {
-                    file.Delete();
+                    try
+                    {
+                        file.Delete();
+                    }
+                    catch { }
                 }
-                catch { }
+                foreach (DirectoryInfo dir in tempDirectoryInfo.GetDirectories())
+                {
+                    try
+                    {
+                        dir.Delete(true);
+                    }
+                    catch { }
+                }
             }
-            foreach (DirectoryInfo dir in tempDirectoryInfo.GetDirectories())
+            catch (FileNotFoundException) { }
+            catch (DirectoryNotFoundException) { }
+            catch (Exception exception)
             {
-                try
-                {
-                    dir.Delete(true);
-                }
-                catch { }
+                EventLog.WriteEntry("Rebel", exception.ToString(), EventLogEntryType.Warning);
             }
         }
 
@@ -176,16 +235,26 @@ namespace Rebel
 
                 foreach (FileInfo file in info.GetFiles())
                 {
-                    file.Delete();
+                    try
+                    {
+                        file.Delete();
+                    }
+                    catch { }
                 }
                 foreach (DirectoryInfo dir in info.GetDirectories())
                 {
-                    dir.Delete(true);
+                    try
+                    {
+                        dir.Delete(true);
+                    }
+                    catch { }
                 }
             }
+            catch (FileNotFoundException) { }
+            catch (DirectoryNotFoundException) { }
             catch (Exception exception)
             {
-                EventLog.WriteEntry("Rebel", exception.ToString(), EventLogEntryType.Error);
+                EventLog.WriteEntry("Rebel", exception.ToString(), EventLogEntryType.Warning);
             }
         }
 
@@ -193,27 +262,27 @@ namespace Rebel
         /// Deletes the files in the System Level Archived Error Reporting
         /// and Solutions logs.
         /// </summary>
-        public void DeleteSystemArchivedErrorReportingLogs()
-        {
-            try
-            {
-                string path = Path.Combine(Environment.GetEnvironmentVariable("AllUsersProfile"), @"Microsoft\Windows\WER\ReportArchive");
-                DirectoryInfo info = new DirectoryInfo(path);
+        //public void DeleteSystemArchivedErrorReportingLogs()
+        //{
+        //    try
+        //    {
+        //        string path = Path.Combine(Environment.GetEnvironmentVariable("AllUsersProfile"), @"Microsoft\Windows\WER\ReportArchive");
+        //        DirectoryInfo info = new DirectoryInfo(path);
 
-                foreach (FileInfo file in info.GetFiles())
-                {
-                    file.Delete();
-                }
-                foreach (DirectoryInfo dir in info.GetDirectories())
-                {
-                    dir.Delete(true);
-                }
-            }
-            catch (Exception exception)
-            {
-                EventLog.WriteEntry("Rebel", exception.ToString(), EventLogEntryType.Error);
-            }
-        }
+        //        foreach (FileInfo file in info.GetFiles())
+        //        {
+        //            file.Delete();
+        //        }
+        //        foreach (DirectoryInfo dir in info.GetDirectories())
+        //        {
+        //            dir.Delete(true);
+        //        }
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        EventLog.WriteEntry("Rebel", exception.ToString(), EventLogEntryType.Error);
+        //    }
+        //}
 
         /// <summary>
         /// Empty the Recycle Bin using the Windows API.
