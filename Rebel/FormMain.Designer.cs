@@ -101,9 +101,9 @@
             this.lblProductDescription.ForeColor = System.Drawing.Color.White;
             this.lblProductDescription.Location = new System.Drawing.Point(82, 59);
             this.lblProductDescription.Name = "lblProductDescription";
-            this.lblProductDescription.Size = new System.Drawing.Size(314, 22);
+            this.lblProductDescription.Size = new System.Drawing.Size(349, 22);
             this.lblProductDescription.TabIndex = 2;
-            this.lblProductDescription.Text = "Computer Cleanup and Optimization";
+            this.lblProductDescription.Text = "Windows Cleanup and Optimization Tool";
             // 
             // pictureBox1
             // 
@@ -139,6 +139,7 @@
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Visible = false;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // lblInstructions
             // 
@@ -197,7 +198,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "REBEL - Cleanup and Optimization";
+            this.Text = "REBEL Cleaner and Optimizer";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

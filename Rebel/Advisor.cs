@@ -1,23 +1,46 @@
-﻿/****************************** Module Header ******************************\
-* Copyright (c) Joshua Shane Martin.
-* 
-* This class provides simple utilities to determine the health of the system.
-* 
-* All other rights reserved.
-\***************************************************************************/
+﻿/*
+ * Advisor.cs - Rebel Cleaner and Optimizer
+ * 
+ * Copyright 2014 by Joshua Shane Martin <smokeygrowth.com>
+ * 
+ * This file is part of Rebel.
+ * 
+ * Rebel is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Rebel is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Rebel.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #region Using Directives
+
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Management;
 using System.Net;
+using System.Reflection;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+
 #endregion
 
 namespace Rebel
 {
+    /// <summary>
+    /// This class provides several simple utilities to determine the
+    /// health and security of the system. This class also contains a
+    /// method to connect to the Rebel Website and retrieve the latest
+    /// version numbers of various user-space applications.
+    /// </summary>
     public class Advisor
     {
         /// <summary>
@@ -184,13 +207,9 @@ namespace Rebel
                     RegistryKey macromediaKey = null;
 
                     // Try to find 64 bit versions of Flash Player.
-                    if (Detector.Is64BitOperatingSystem())
-                    {
-                        RegistryKey software64 = softwareKey.OpenSubKey("Wow6432Node");
-
-                        if (software64 != null)
-                            macromediaKey = software64.OpenSubKey("Macromedia");
-                    }
+                    RegistryKey software64 = softwareKey.OpenSubKey("Wow6432Node");
+                    if (software64 != null)
+                        macromediaKey = software64.OpenSubKey("Macromedia");
 
                     // If no 64 bit version, try to find 32 bit version.
                     if (macromediaKey == null)
@@ -212,7 +231,7 @@ namespace Rebel
 
                             // Determine if the version found in the registry is
                             // the same as the latest version.
-                            if (version != latestVersion.Name)
+                            if (int.Parse(version) < int.Parse(latestVersion.Name))
                                 outdated = true;
                         }
                     }
@@ -249,13 +268,9 @@ namespace Rebel
                     RegistryKey adobeKey = null;
 
                     // Try to find 64 bit versions of Adobe Reader.
-                    if (Detector.Is64BitOperatingSystem())
-                    {
-                        RegistryKey software64 = softwareKey.OpenSubKey("Wow6432Node");
-
-                        if (software64 != null)
-                            adobeKey = software64.OpenSubKey("Adobe");
-                    }
+                    RegistryKey software64 = softwareKey.OpenSubKey("Wow6432Node");
+                    if (software64 != null)
+                        adobeKey = software64.OpenSubKey("Adobe");
 
                     // If no 64 bit version, try to find 32 bit version.
                     if (adobeKey == null)
@@ -307,6 +322,30 @@ namespace Rebel
             return outdated;
         }
 
+        public bool HasOutdatedRebel()
+        {
+            bool outdated = false;
+
+            try
+            {
+                // Get the latest version from the Website and the
+                // currently installed from the running assembly.
+                System.Version latestVersion = new System.Version(GetLatestVersion("rebel").Name);
+                System.Version installedVersion = Assembly.GetEntryAssembly().GetName().Version;
+
+                // Determine if the installed version older than the latest.
+                if (installedVersion < latestVersion)
+                    outdated = true;
+            }
+            catch (WebException) { }
+            catch (Exception exception)
+            {
+                EventLog.WriteEntry("Rebel", exception.ToString());
+            }
+
+            return outdated;
+        }
+
         public Version GetLatestVersion(string application)
         {
             Version latestVersion = null;
@@ -336,9 +375,10 @@ namespace Rebel
         }
     }
 
-    [Serializable]
+    [DataContract]
     public class Version
     {
+        [DataMember(Name = "name")]
         public string Name;
     }
 }

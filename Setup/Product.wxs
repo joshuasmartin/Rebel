@@ -2,9 +2,30 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
      xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension"
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-	<Product Id="*" Name="Rebel" Language="1033" Version="1.0.0.0" Manufacturer="Rebel" UpgradeCode="0e19f71b-7d3e-452e-aa85-32cf45a8360c">
+
+  <?define ProductName = "Rebel Cleaner and Optimizer"?>
+  <?define ProductCode = "{2D116C25-56DC-40BE-B8F9-5CBF9C23D1DD}"?>
+  <?define UpgradeCode = "{3E7BB0A7-19E0-4C34-98F4-E412EED5BB47}"?>
+  <?define ProductVersion = "1.1.0.0"?>
+  <?define InitialProductVersion = "1.0.0.0"?>
+  
+	<Product Id="$(var.ProductCode)" Name="$(var.ProductName)" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Joshua Shane Martin" UpgradeCode="$(var.UpgradeCode)">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion Minimum="$(var.ProductVersion)"
+                      IncludeMinimum="no"
+                      OnlyDetect="yes"
+                      Language="1033"
+                      Property="NEWPRODUCTFOUND" />
+      <UpgradeVersion Minimum="$(var.InitialProductVersion)"
+                      IncludeMinimum="yes"
+                      Maximum="$(var.ProductVersion)"
+                      IncludeMaximum="no"
+                      Language="1033"
+                      Property="UPGRADEFOUND" />
+    </Upgrade>
+    
     <!-- Require .NET Framework 3.5 -->
     <PropertyRef Id="NETFRAMEWORK35"/>
 
@@ -19,13 +40,12 @@
     <!-- Standard variable for the Add + Remove Programs icon. -->
     <Property Id="ARPPRODUCTICON" Value="ICON.ICO" />
     
-		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate EmbedCab="yes" />
 
     <!-- Install a Start Menu shortcut. -->
     <DirectoryRef Id="APPLICATIONPROGRAMSFOLDER">
       <Component Id="ApplicationShortcut" Guid="274ED1B3-3091-4906-A7F2-071CCDB9F8E1">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="Rebel"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="Rebel Cleaner and Optimizer"
               Target="[INSTALLFOLDER]Rebel.exe" WorkingDirectory="INSTALLFOLDER"
               Icon="ICON.ICO" />
         <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="APPLICATIONPROGRAMSFOLDER" On="uninstall"/>
@@ -43,6 +63,19 @@
     <InstallExecuteSequence>
       <Custom Action="LaunchRebelExeFile" After="InstallFinalize">NOT Installed</Custom>
     </InstallExecuteSequence>
+  
+    <!-- Prevent downgrading -->
+    <CustomAction Id="PreventDowngrading" Error="Newer version already installed." />
+ 
+    <!-- Sequences -->
+    <InstallExecuteSequence>
+      <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+      <RemoveExistingProducts After="InstallFinalize" />
+    </InstallExecuteSequence>
+   
+    <InstallUISequence>
+      <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+    </InstallUISequence>
 	</Product>
 
 	<Fragment>
