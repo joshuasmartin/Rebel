@@ -63,28 +63,32 @@ namespace Rebel
         /// </summary>
         public void DeleteThumbnailCaches()
         {
-            // Loop each user home directory under the system drive's Users folder.
-            string pathToUsers = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), "Users");
-            string[] homes = Directory.GetDirectories(pathToUsers);
-            foreach (string home in homes)
+            try
             {
-                // Determine if the thumbnail cache directory exists.
-                string pathToHome = Path.Combine(pathToUsers, home);
-                string pathToExplorer = Path.Combine(pathToHome, @"AppData\Local\Microsoft\Windows\Explorer");
-                if (Directory.Exists(pathToExplorer))
+                // Loop each user home directory under the system drive's Users folder.
+                string pathToUsers = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), "Users");
+                string[] homes = Directory.GetDirectories(pathToUsers);
+                foreach (string home in homes)
                 {
-                    // Delete each thumbnail cache in the directory.
-                    DirectoryInfo di = new DirectoryInfo(pathToExplorer);
-                    FileInfo[] files = di.GetFiles("*.db");
-                    foreach (FileInfo file in files)
-                        try
-                        {
-                            file.Attributes = FileAttributes.Normal;
-                            File.Delete(file.FullName);
-                        }
-                        catch { }
+                    // Determine if the thumbnail cache directory exists.
+                    string pathToHome = Path.Combine(pathToUsers, home);
+                    string pathToExplorer = Path.Combine(pathToHome, @"AppData\Local\Microsoft\Windows\Explorer");
+                    if (Directory.Exists(pathToExplorer))
+                    {
+                        // Delete each thumbnail cache in the directory.
+                        DirectoryInfo di = new DirectoryInfo(pathToExplorer);
+                        FileInfo[] files = di.GetFiles("*.db");
+                        foreach (FileInfo file in files)
+                            try
+                            {
+                                file.Attributes = FileAttributes.Normal;
+                                File.Delete(file.FullName);
+                            }
+                            catch { }
+                    }
                 }
             }
+            catch (Exception) { }
         }
 
         // Deletes the temporary files for each user account on the machine.
