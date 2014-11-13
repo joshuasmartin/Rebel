@@ -6,7 +6,7 @@
   <?define ProductName = "Rebel Cleaner and Optimizer"?>
   <?define ProductCode = "ADD YOUR GUID HERE"?>
   <?define UpgradeCode = "ADD YOUR GUID HERE"?>
-  <?define ProductVersion = "1.1.1.0"?>
+  <?define ProductVersion = "1.1.2.0"?>
   <?define InitialProductVersion = "1.0.0.0"?>
   
 	<Product Id="$(var.ProductCode)" Name="$(var.ProductName)" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Joshua Shane Martin" UpgradeCode="$(var.UpgradeCode)">

@@ -223,11 +223,17 @@ namespace Rebel
 
                         if (flashPlayerKey != null)
                         {
-                            Version latestVersion = GetLatestVersion("flash");
-
                             string version = Convert.ToString(flashPlayerKey.GetValue("CurrentVersion"));
                             version = version.Replace(",", string.Empty);
                             version = version.Replace(".", string.Empty);
+
+                            // XP ships with an OCX of version 6,0,88,0
+                            // for use in internal Windows features.
+                            // We can ignore this version.
+                            if (version == "60880")
+                                return false;
+
+                            Version latestVersion = GetLatestVersion("flash");
 
                             // Determine if the version found in the registry is
                             // the same as the latest version.
