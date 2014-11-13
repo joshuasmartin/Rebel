@@ -4,8 +4,8 @@
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
 
   <?define ProductName = "Rebel Cleaner and Optimizer"?>
-  <?define ProductCode = "{2D116C25-56DC-40BE-B8F9-5CBF9C23D1DD}"?>
-  <?define UpgradeCode = "{3E7BB0A7-19E0-4C34-98F4-E412EED5BB47}"?>
+  <?define ProductCode = "ADD YOUR GUID HERE"?>
+  <?define UpgradeCode = "ADD YOUR GUID HERE"?>
   <?define ProductVersion = "1.1.0.0"?>
   <?define InitialProductVersion = "1.0.0.0"?>
   

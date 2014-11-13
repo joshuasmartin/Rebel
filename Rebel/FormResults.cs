@@ -124,7 +124,7 @@ namespace Rebel
                 object value = grdResults.Rows[e.RowIndex].Cells[3].Value;
                 if (value is DBNull) { return; }
 
-                string url = string.Format("http://www.getrebel.com/issues/{0}", value.ToString());
+                string url = string.Format("http://www.getrebel.com/articles/{0}", value.ToString());
 
                 Process.Start(url);
             }

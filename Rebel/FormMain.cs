@@ -26,6 +26,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -49,6 +50,8 @@ namespace Rebel
         public FormMain()
         {
             InitializeComponent();
+
+            lblCopyright.Text = lblCopyright.Text + "  .  Version " + Assembly.GetEntryAssembly().GetName().Version.ToString() + "  .  Licensed under GPLv3";
 
             bwCleanup.WorkerReportsProgress = true;
             bwCleanup.WorkerSupportsCancellation = true;
